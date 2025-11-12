@@ -4,7 +4,7 @@ kind: Namespace
 metadata:
   name: my-nginx-app
   labels:
-    istio-injection: enabled # This label enables Istio sidecar injection
+    istio-injection: enabled # IMPORTANT: This label enables Istio sidecar injection
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -56,3 +56,22 @@ spec:
     hosts:
     - "*" # Accepts traffic for any host. For production, specify your domain.
 ---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: my-nginx-virtualservice
+  namespace: my-nginx-app
+spec:
+  hosts:
+  - "*" # Route for any host that matches the gateway
+  gateways:
+  - my-nginx-gateway # Associate with our created Gateway
+  http:
+  - match:
+    - uri:
+        prefix: / # Match all requests
+    route:
+    - destination:
+        host: nginx-service.my-nginx-app.svc.cluster.local # FQDN of your service
+        port:
+          number: 80
