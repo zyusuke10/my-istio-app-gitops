@@ -4,7 +4,7 @@ kind: Namespace
 metadata:
   name: my-nginx-app
   labels:
-    istio-injection: enabled # IMPORTANT: This label enables Istio sidecar injection
+    istio-injection: enabled # This label enables Istio sidecar injection
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -20,6 +20,7 @@ spec:
     metadata:
       labels:
         app: nginx
+        version: v1
     spec:
       containers:
       - name: nginx
@@ -44,17 +45,17 @@ apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: my-nginx-gateway
-  namespace: my-nginx-app # Gateway can be in any namespace, but often co-located or in istio-system
+  namespace: my-nginx-app
 spec:
   selector:
-    istio: ingressgateway # This selects the default Istio Ingress Gateway
+    istio: ingressgateway
   servers:
   - port:
       number: 80
       name: http
       protocol: HTTP
     hosts:
-    - "*" # Accepts traffic for any host. For production, specify your domain.
+    - "*"
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -63,15 +64,29 @@ metadata:
   namespace: my-nginx-app
 spec:
   hosts:
-  - "*" # Route for any host that matches the gateway
+  - "*"
   gateways:
-  - my-nginx-gateway # Associate with our created Gateway
+  - my-nginx-gateway
   http:
   - match:
     - uri:
-        prefix: / # Match all requests
+        prefix: /
     route:
     - destination:
-        host: nginx-service.my-nginx-app.svc.cluster.local # FQDN of your service
+        host: nginx-service.my-nginx-app.svc.cluster.local
         port:
           number: 80
+        subset: blue
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: nginx-destination-rule
+  namespace: my-nginx-app
+spec:
+  host: nginx-service.my-nginx-app.svc.cluster.local
+  subsets:
+  - name: blue
+    labels:
+      app: nginx
+      version: v1
