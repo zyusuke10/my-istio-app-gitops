@@ -27,6 +27,17 @@ spec:
         image: nginx:latest
         ports:
         - containerPort: 80
+        volumeMounts:
+        - name: nginx-config-volume
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        - name: nginx-config-volume
+          mountPath: /usr/share/nginx/html/custom_index.html
+          subPath: custom_index.html
+      volumes:
+      - name: nginx-config-volume
+        configMap:
+          name: nginx-custom-config
 ---
 apiVersion: v1
 kind: Service
@@ -90,3 +101,70 @@ spec:
     labels:
       app: nginx
       version: v1
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-custom-config
+  namespace: my-nginx-app
+data:
+  nginx.conf: | # The content of your config/nginx.conf file goes here
+    worker_processes 1;
+
+    events {
+        worker_connections 1024;
+    }
+
+    http {
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+
+        log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                          '$status $body_bytes_sent "$http_referer" '
+                          '"$http_user_agent" "$http_x_forwarded_for"';
+
+        access_log  /var/log/nginx/access.log  main;
+        error_log   /var/log/nginx/error.log   warn;
+
+        sendfile        on;
+        keepalive_timeout  65;
+
+        server {
+            listen 80;
+            server_name localhost;
+
+            root /usr/share/nginx/html;
+
+            location / {
+                index custom_index.html index.htm;
+                try_files $uri $uri/ =404;
+            }
+
+            location /status {
+                return 200 "Nginx is running!\n";
+                add_header Content-Type text/plain;
+            }
+        }
+    }
+  custom_index.html: |
+   <!DOCTYPE html>
+    <html>
+    <head>
+    <title>Welcome to My Custom Nginx!</title>
+    <style>
+        body {
+            width: 35em;
+            margin: 0 auto;
+            font-family: Tahoma, Verdana, Arial, sans-serif;
+        }
+    </style>
+    </head>
+    <body>
+    <h1>Welcome to My Custom Nginx!</h1>
+    <p>This is my custom index.html served by a custom Nginx configuration.</p>
+    <p>If you see this page, the nginx web server is successfully installed and working.</p>
+
+    <p><em>Thank you for using nginx.</em></p>
+    </body>
+    </html>
+  
