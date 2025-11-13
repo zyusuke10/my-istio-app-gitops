@@ -8,7 +8,7 @@ spec:
   source:
     repoURL:  https://github.com/zyusuke10/my-istio-app-gitops.git
     targetRevision: master
-    path: my-nginx-chart
+    # path: my-nginx-chart
     # helm: {}
   destination:
     server: https://kubernetes.default.svc
