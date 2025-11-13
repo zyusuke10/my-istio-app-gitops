@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "my-nginx-chart.fullname" . }}
+  labels:
+    {{- include "my-nginx-chart.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace.name }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "my-nginx-chart.selectorLabels" . | nindent 6 }}
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        {{- include "my-nginx-chart.labels" . | nindent 8 }}
+        app: nginx # Align with Istio DestinationRule's subsetLabels
+        version: v1 # Align with Istio DestinationRule's subsetLabels
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          volumeMounts:
+          - name: nginx-config-volume
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+          - name: nginx-config-volume
+            mountPath: /usr/share/nginx/html/custom_index.html
+            subPath: custom_index.html
+      volumes:
+        - name: nginx-config-volume
+          configMap:
+            name: {{ .Values.configMap.name }}

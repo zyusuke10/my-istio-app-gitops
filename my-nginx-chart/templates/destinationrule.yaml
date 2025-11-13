@@ -1,0 +1,17 @@
+{{- if .Values.istio.enabled }}
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: {{ .Values.istio.destinationRule.name }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "my-nginx-chart.labels" . | nindent 4 }}
+spec:
+  host: {{ .Values.istio.destinationRule.host }}
+  subsets:
+  - name: {{ .Values.istio.destinationRule.subsetName }}
+    labels:
+      {{- range $key, $value := .Values.istio.destinationRule.subsetLabels }}
+      {{ $key }}: {{ $value | quote }}
+      {{- end }}
+{{- end }}

@@ -1,0 +1,24 @@
+{{- if .Values.istio.enabled }}
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ .Values.istio.virtualService.name }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "my-nginx-chart.labels" . | nindent 4 }}
+spec:
+  hosts:
+    - "{{ .Values.istio.virtualService.host }}"
+  gateways:
+    - {{ .Values.istio.gateway.name }}
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: {{ .Values.istio.virtualService.destinationHost }}
+        port:
+          number: {{ .Values.istio.virtualService.destinationPort }}
+        subset: {{ .Values.istio.virtualService.subset }}
+{{- end }}

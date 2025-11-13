@@ -1,0 +1,53 @@
+# Default values for my-nginx-chart.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: nginx
+  # This sets the pull policy for images.
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 80
+
+# --- Nginx Configuration ---
+nginxConfig:
+  workerProcesses: 1
+
+# --- Istio Configuration ---
+istio:
+  enabled: true # Whether to enable Istio resources
+  gateway:
+    name: my-nginx-gateway
+    hosts: ["*"]
+  virtualService:
+    name: my-nginx-virtualservice
+    host: "*"
+    destinationHost: "nginx-service.{{ .Release.Namespace }}.svc.cluster.local"
+    destinationPort: 80
+    subset: blue
+  destinationRule:
+    name: nginx-destination-rule
+    host: "nginx-service.{{ .Release.Namespace }}.svc.cluster.local"
+    subsetName: blue
+    subsetLabels:
+      app: nginx
+      version: v1 # Should match the Pod label in the Deployment
+
+# --- Namespace Configuration ---
+namespace:
+  name: my-nginx-app
+  create: true
+  istioInjection: true # Whether to add the istio-injection label to the Namespace
+
+# --- ConfigMap Configuration ---
+configMap:
+  name: nginx-custom-config
+  # The contents of nginx.conf and custom_index.html are managed in the files directory, so they are not defined here.
