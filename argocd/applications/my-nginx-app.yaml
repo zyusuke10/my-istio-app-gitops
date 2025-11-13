@@ -8,7 +8,7 @@ spec:
   source:
     repoURL:  https://github.com/zyusuke10/my-istio-app-gitops.git
     targetRevision: master
-    path: application-manifests/nginx-app
+    path: application-manifests/nginx-app/manifests
   destination:
     server: https://kubernetes.default.svc
     namespace: my-nginx-app
