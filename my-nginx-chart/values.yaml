@@ -25,17 +25,17 @@ nginxConfig:
 istio:
   enabled: true # Whether to enable Istio resources
   gateway:
-    name: my-nginx-gateway
+    name: nginx-gateway
     hosts: ["*"]
   virtualService:
-    name: my-nginx-virtualservice
+    name: nginx-virtualservice
     host: "*"
-    destinationHost: "my-nginx-chart-service.my-nginx-app.svc.cluster.local"
+    destinationHost: "my-nginx-app-my-nginx-chart-service.my-nginx-app.svc.cluster.local"
     destinationPort: 80
     subset: blue
   destinationRule:
     name: nginx-destination-rule
-    host: "my-nginx-chart-service.my-nginx-app.svc.cluster.local"
+    host: "my-nginx-app-my-nginx-chart-service.my-nginx-app.svc.cluster.local"
     subsetName: blue
     subsetLabels:
       app: nginx
