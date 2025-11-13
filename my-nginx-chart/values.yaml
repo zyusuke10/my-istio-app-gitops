@@ -30,12 +30,12 @@ istio:
   virtualService:
     name: my-nginx-virtualservice
     host: "*"
-    destinationHost: "nginx-service.{{ .Release.Namespace }}.svc.cluster.local"
+    destinationHost: "my-nginx-chart-service.my-nginx-app.svc.cluster.local"
     destinationPort: 80
     subset: blue
   destinationRule:
     name: nginx-destination-rule
-    host: "nginx-service.{{ .Release.Namespace }}.svc.cluster.local"
+    host: "my-nginx-chart-service.my-nginx-app.svc.cluster.local"
     subsetName: blue
     subsetLabels:
       app: nginx
