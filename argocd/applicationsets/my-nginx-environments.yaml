@@ -24,7 +24,7 @@ spec:
         path: my-nginx-chart
         helm:
           valueFiles:
-            - "{{ path.path }}"
+            - "{{ path.filepath }}"
       destination:
         server: https://kubernetes.default.svc
         namespace: my-nginx-{{ path[1] }}
