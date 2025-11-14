@@ -1,0 +1,1 @@
+replicaCount: 3 # use 3 replicas for production environment

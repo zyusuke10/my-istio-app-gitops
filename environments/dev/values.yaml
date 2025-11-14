@@ -1,0 +1,2 @@
+# environments/dev/values.yaml
+replicaCount: 1 # use 1 replica for dev environment

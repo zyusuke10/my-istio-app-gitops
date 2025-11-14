@@ -1,0 +1,1 @@
+replicaCount: 2 # use 2 replicas for staging environment
