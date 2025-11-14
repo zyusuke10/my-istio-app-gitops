@@ -24,7 +24,7 @@ spec:
         path: my-nginx-chart
         helm:
           valueFiles:
-            - "environments/{{ path[1] }}/values.yaml"
+            - "{{ .Files.Get path.path }} "
       destination:
         server: https://kubernetes.default.svc
         namespace: my-nginx-{{ path[1] }}
