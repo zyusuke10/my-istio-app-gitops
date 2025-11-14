@@ -27,7 +27,7 @@ spec:
             - environments/{{ path[2] }}/values.yaml
       destination:
         server: https://kubernetes.default.svc
-        namespace: my-nginx-{{ path[2] }}
+        namespace: my-nginx-app
       syncPolicy:
         automated:
           prune: true
