@@ -9,7 +9,7 @@ spec:
         repoURL: https://github.com/zyusuke10/my-istio-app-gitops.git
         revision: master
         files:
-          - path: "my-nginx-chart/environments/**/values.yaml"
+          - path: "environments/**/values.yaml"
   template:
     metadata:
       name: my-nginx-{{ path[1] }} #application name per environment
